@@ -3,16 +3,12 @@ package de.MissingNameException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Config {
-	
-	ArrayList<String> configName = new ArrayList<String>();
-	ArrayList<String> configValue = new ArrayList<String>();
-
 	
 	private boolean output = true;
 	
@@ -28,8 +24,6 @@ public class Config {
 			configFile = new File(path + "config.cfg");
 			if(configFile.createNewFile()) {
 				print("Config file created");
-			} else {
-				loadConfig();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -56,30 +50,8 @@ public class Config {
 			br.close();
 			bw.write(varName + " = " + value);
 			bw.newLine();
-			configName.add(varName);
-			configValue.add(value);
 			print("new Config added!");
 			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Loads all already existing configs
-	 */
-	public void loadConfig() {
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(configFile));
-			String line;
-			while((line = br.readLine()) != null) {
-				String[] split = line.split(" = ");
-				configName.add(split[0]);
-				configValue.add(split[1]);
-			}
-			print("finished loading Config file!");
-			br.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,20 +65,6 @@ public class Config {
 	public File getConfigFile() {
 		return configFile;
 	}
-	/**
-	 * Simple getter getConfigNime()
-	 * @return ArrayList of configName
-	 */
-	public ArrayList<String> getConfigName() {
-		return configName;
-	}
-	/**
-	 * Simple getter getConfigValue()
-	 * @return ArrayList of configValue
-	 */
-	public ArrayList<String> getConfigValue() {
-		return configValue;
-	}
 
 	/**
 	 * toggles the output if activated, you'll see messages like configfile loaded etc.
@@ -117,14 +75,50 @@ public class Config {
 	}
 	
 	/**
-	 * Gives a string which holds all configs with name and value
+	 * gets the value of the given variable
+	 * @param varName variable name
+	 * @return Value of given variable
 	 */
-	public String toString() {
-		String result = "";
-		for (int i = 0; i < configName.size(); i++) {
-			result += configName.get(i) + " = " + configValue.get(i) + "\n";
+	public String getValue(String varName) {
+		try {
+			@SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader(configFile));
+			String line;
+			while((line = br.readLine()) != null) {
+				if(line.contains(varName)) {
+					String[] split = line.split(" = ");
+					return split[1];
+				}
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return result;
+		return null;
+	}
+	
+	/**
+	 * Outputs file
+	 */
+	public void readFile() {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(configFile));
+			String line;
+			while((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private void print(String x) {
 		if(output) {
