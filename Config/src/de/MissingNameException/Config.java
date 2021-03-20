@@ -59,6 +59,33 @@ public class Config {
 	}
 	
 	/**
+	 * looks if given variable exists
+	 * @param varName - Name of variable
+	 * @return true if variable exists
+	 */
+	public boolean varExists(String varName) {
+		try {
+			@SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader(configFile));
+			String line;
+			while((line = br.readLine()) != null) {
+				if(line.contains(varName)) {
+					return true;
+				}
+			}
+			br.close();
+			return false;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
 	 * Simple getter getConfigFile()
 	 * @return configFile
 	 */
